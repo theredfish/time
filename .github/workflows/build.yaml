@@ -196,11 +196,19 @@ jobs:
           command: hack
           args: check --feature-powerset --optional-deps --skip default,libc,winapi,stdweb
 
-      - name: Test (--all-features)
+      - name: Test (--all --all-features)
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --all-features
+          args: --all --all-features
+        if: matrix.rust == '1.36.0' # `--workspace` was not implemented until Rust 1.39.
+
+      - name: Test (--workspace --all-features)
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --workspace --all-features
+        if: matrix.rust != '1.36.0'
 
   fmt:
     name: Formatting
@@ -285,8 +293,7 @@ jobs:
           command: doc
           args: --no-deps --all-features
         env:
-          RUSTFLAGS: --cfg __time_02_docs
-          RUSTDOCFLAGS: --cfg __time_02_docs
+          RUSTDOCFLAGS: --cfg __time_02_docs --cfg __time_formatting_01_docs
 
       - name: Publish documentation
         uses: JamesIves/github-pages-deploy-action@releases/v3
