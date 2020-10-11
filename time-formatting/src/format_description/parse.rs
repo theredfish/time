@@ -112,18 +112,11 @@ fn parse_component<'a>(
 
 /// Parse a literal string from the format description.
 fn parse_literal<'a>(s: &'a str, index: &mut usize) -> ParsedItem<'a> {
-    if let Some(loc) = s.find('[') {
-        *index += loc;
-        ParsedItem {
-            item: Description::Literal(&s[..loc]),
-            remaining: &s[loc..],
-        }
-    } else {
-        *index += s.len();
-        ParsedItem {
-            item: Description::Literal(s),
-            remaining: "",
-        }
+    let loc = s.find('[').unwrap_or_else(|| s.len());
+    *index += loc;
+    ParsedItem {
+        item: Description::Literal(&s[..loc]),
+        remaining: &s[loc..],
     }
 }
 
